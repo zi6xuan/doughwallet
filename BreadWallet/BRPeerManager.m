@@ -91,8 +91,9 @@ static const struct { uint32_t height; char *hash; time_t timestamp; uint32_t ta
 
 //TODO: XXXX compare seeds against mike hearn's list for bitcoinXT
 static const char *dns_seeds[] = {
-    "seed.bitcoin.sipa.be", "dnsseed.bluematt.me", "dnsseed.bitcoin.dashjr.org", "seed.bitcoinstats.com",
-    "seed.bitnodes.io", "bitseed.xf2.org"
+    "seed.dogecoin.com",
+    "seed.mophides.com",
+    "seed.dogechain.info",
 };
 
 #endif
