@@ -69,7 +69,10 @@ static const struct { uint32_t height; char *hash; time_t timestamp; uint32_t ta
 };
 
 static const char *dns_seeds[] = {
-    "testnet-seed.bitcoin.petertodd.org", "testnet-seed.bluematt.me", "testnet-seed.alexykot.me"
+    "testnets.chain.so",
+    "suchdig.com",
+    "testdoge.lionservers.de",
+    "senatorwhiskers.com",
 };
 
 #else // main net
