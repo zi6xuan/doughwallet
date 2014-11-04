@@ -26,9 +26,9 @@
 #import <Foundation/Foundation.h>
 
 #if BITCOIN_TESTNET
-#define BITCOIN_MAGIC_NUMBER 0x0709110b
+#define BITCOIN_MAGIC_NUMBER 0xfcc1b7dc
 #else
-#define BITCOIN_MAGIC_NUMBER 0xd9b4bef9
+#define BITCOIN_MAGIC_NUMBER 0xc0c0c0c0
 #endif
 
 @interface NSMutableData (Bitcoin)
