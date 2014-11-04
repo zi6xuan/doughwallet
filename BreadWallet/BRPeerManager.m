@@ -772,10 +772,10 @@ static const char *dns_seeds[] = {
 // BUG: this just doesn't work very well... we need to start storing tx metadata
 - (NSTimeInterval)timestampForBlockHeight:(uint32_t)blockHeight
 {
-    if (blockHeight == TX_UNCONFIRMED) return [NSDate timeIntervalSinceReferenceDate] + 5*60; // average confirm time
+    if (blockHeight == TX_UNCONFIRMED) return [NSDate timeIntervalSinceReferenceDate] + 30; // average confirm time
 
-    if (blockHeight > self.lastBlockHeight) { // future block, assume 10 minutes per block after last block
-        return self.lastBlock.timestamp + (blockHeight - self.lastBlockHeight)*10*60;
+    if (blockHeight > self.lastBlockHeight) { // future block, assume 1 minute per block after last block
+        return self.lastBlock.timestamp + (blockHeight - self.lastBlockHeight)*1*60;
     }
 
     if (_blocks.count > 0) {
