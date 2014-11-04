@@ -12,30 +12,30 @@
 			<key>CFBundleTypeIconFiles</key>
 			<array/>
 			<key>CFBundleTypeName</key>
-			<string>Bitcoin Payment Request</string>
+			<string>Dogecoin Payment Request</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>bitcoin.paymentrequest</string>
+				<string>doge.payment.request</string>
 			</array>
 		</dict>
 		<dict>
 			<key>CFBundleTypeIconFiles</key>
 			<array/>
 			<key>CFBundleTypeName</key>
-			<string>Bitcoin Payment</string>
+			<string>Dogecoin Payment</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>bitcoin.payment</string>
+				<string>doge.payment.payment</string>
 			</array>
 		</dict>
 		<dict>
 			<key>CFBundleTypeIconFiles</key>
 			<array/>
 			<key>CFBundleTypeName</key>
-			<string>Bitcoin Payment ACK</string>
+			<string>Dogecoin Payment ACK</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>bitcoin.paymentack</string>
+				<string>doge.payment.ack</string>
 			</array>
 		</dict>
 	</array>
@@ -59,10 +59,10 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>bitcoin</string>
+			<string>dogecoin</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>bitcoin</string>
+				<string>dogecoin</string>
 			</array>
 		</dict>
 		<dict>
@@ -108,13 +108,13 @@
 				<string>public.data</string>
 			</array>
 			<key>UTTypeDescription</key>
-			<string>Bitcoin Payment Request</string>
+			<string>Dogecoin Payment Request</string>
 			<key>UTTypeIdentifier</key>
-			<string>bitcoin.paymentrequest</string>
+			<string>doge.payment.request</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.mime-type</key>
-				<string>application/bitcoin-paymentrequest</string>
+				<string>application/vnd.doge.payment.request</string>
 			</dict>
 		</dict>
 		<dict>
@@ -123,13 +123,13 @@
 				<string>public.data</string>
 			</array>
 			<key>UTTypeDescription</key>
-			<string>Bitcoin Payment</string>
+			<string>Dogecoin Payment</string>
 			<key>UTTypeIdentifier</key>
-			<string>bitcoin.payment</string>
+			<string>doge.payment.payment</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.mime-type</key>
-				<string>application/bitcoin-payment</string>
+				<string>application/vnd.doge.payment.payment</string>
 			</dict>
 		</dict>
 		<dict>
@@ -138,13 +138,13 @@
 				<string>public.data</string>
 			</array>
 			<key>UTTypeDescription</key>
-			<string>Bitcoin Payment ACK</string>
+			<string>Dogecoin Payment ACK</string>
 			<key>UTTypeIdentifier</key>
-			<string>bitcoin.paymentack</string>
+			<string>doge.payment.ack</string>
 			<key>UTTypeTagSpecification</key>
 			<dict>
 				<key>public.mime-type</key>
-				<string>application/bitcoin-paymentack</string>
+				<string>application/vnd.doge.payment.ack</string>
 			</dict>
 		</dict>
 	</array>
