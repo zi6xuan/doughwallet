@@ -80,7 +80,7 @@
     NSURL *url = [NSURL URLWithString:s];
     
     if (! url || ! url.scheme) {
-        url = [NSURL URLWithString:[NSString stringWithFormat:@"bitcoin://%@", s]];
+        url = [NSURL URLWithString:[NSString stringWithFormat:@"dogecoin://%@", s]];
     }
     else if (! url.host && url.resourceSpecifier) {
         url = [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@", url.scheme, url.resourceSpecifier]];
@@ -115,7 +115,7 @@
 {
     if (! self.paymentAddress) return nil;
 
-    NSMutableString *s = [NSMutableString stringWithFormat:@"bitcoin:%@", self.paymentAddress];
+    NSMutableString *s = [NSMutableString stringWithFormat:@"dogecoin:%@", self.paymentAddress];
     NSMutableArray *q = [NSMutableArray array];
     
     if (self.amount > 0) {
