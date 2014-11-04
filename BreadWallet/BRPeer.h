@@ -28,7 +28,7 @@
 #if BITCOIN_TESTNET
 #define BITCOIN_STANDARD_PORT          18333
 #else
-#define BITCOIN_STANDARD_PORT          8333
+#define BITCOIN_STANDARD_PORT          22556
 #endif
 
 #define BITCOIN_TIMEOUT_CODE           1001
