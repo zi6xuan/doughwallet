@@ -30,9 +30,9 @@
 #import "BRTransaction.h"
 #import "BRBubbleView.h"
 
-#define QR_TIP      NSLocalizedString(@"Let others scan this QR code to get your bitcoin address. Anyone can send "\
-                    "bitcoins to your wallet by transferring them to your address.", nil)
-#define ADDRESS_TIP NSLocalizedString(@"This is your bitcoin address. Tap to copy it or send it by email or sms. The "\
+#define QR_TIP      NSLocalizedString(@"Let others scan this QR code to get your dogecoin address. Anyone can send "\
+                    "dogecoins to your wallet by transferring them to your address.", nil)
+#define ADDRESS_TIP NSLocalizedString(@"This is your dogecoin address. Tap to copy it or send it by email or sms. The "\
                     "address will change each time you receive funds, but old addresses always work.", nil)
 
 @interface BRReceiveViewController ()
@@ -173,7 +173,7 @@
     BOOL req = (_paymentRequest) ? YES : NO;
     UIActionSheet *a = [UIActionSheet new];
 
-    a.title = [NSString stringWithFormat:NSLocalizedString(@"Receive bitcoins at this address: %@", nil),
+    a.title = [NSString stringWithFormat:NSLocalizedString(@"Receive dogecoin at this address: %@", nil),
                self.paymentAddress];
     a.delegate = self;
     [a addButtonWithTitle:(req) ? NSLocalizedString(@"copy request to clipbaord", nil) :
