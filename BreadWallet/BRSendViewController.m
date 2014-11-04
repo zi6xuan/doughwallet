@@ -125,7 +125,7 @@ static NSString *sanitizeString(NSString *s)
 - (void)handleURL:(NSURL *)url
 {
     //TODO: XXX custom url splash image per: "Providing Launch Images for Custom URL Schemes."
-    if ([url.scheme isEqual:@"bitcoin"]) {
+    if ([url.scheme isEqual:@"dogecoin"]) {
         [self confirmRequest:[BRPaymentRequest requestWithURL:url]];
     }
     else {
@@ -743,7 +743,7 @@ fromConnection:(AVCaptureConnection *)connection
             [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(resetQRGuide) object:nil];
             self.scanController.cameraGuide.image = [UIImage imageNamed:@"cameraguide-red"];
 
-            if ([s hasPrefix:@"bitcoin:"] || [request.paymentAddress hasPrefix:@"1"]) {
+            if ([s hasPrefix:@"dogecoin:"] || [request.paymentAddress hasPrefix:@"D"]) {
                 self.scanController.message.text = [NSString stringWithFormat:@"%@\n%@",
                                                     NSLocalizedString(@"not a valid dogecoin address", nil),
                                                     request.paymentAddress];

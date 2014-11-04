@@ -225,7 +225,7 @@
         if ([MFMailComposeViewController canSendMail]) {
             MFMailComposeViewController *c = [MFMailComposeViewController new];
             
-            [c setSubject:NSLocalizedString(@"Bitcoin address", nil)];
+            [c setSubject:NSLocalizedString(@"Dogecoin address", nil)];
             [c setMessageBody:self.paymentRequest.string isHTML:NO];
             c.mailComposeDelegate = self;
             [self.navigationController presentViewController:c animated:YES completion:nil];
