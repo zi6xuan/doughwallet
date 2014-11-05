@@ -23,6 +23,7 @@
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
 
+#import "BRKey+BIP38.h"
 #import "NSData+Hash.h"
 #import <CommonCrypto/CommonDigest.h>
 #import <openssl/ripemd.h>
@@ -54,6 +55,12 @@
     CC_SHA256(self.bytes, (CC_LONG)self.length, d.mutableBytes);
     CC_SHA256(d.bytes, (CC_LONG)d.length, d.mutableBytes);
     
+    return d;
+}
+
+- (NSData *)SCRYPT
+{
+    NSMutableData *d = [NSMutableData dataWithData:scrypt(self, self, 1024, 1, 1, 32)];
     return d;
 }
 
