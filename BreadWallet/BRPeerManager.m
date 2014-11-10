@@ -53,7 +53,8 @@
     prevBlock:@"0000000000000000000000000000000000000000000000000000000000000000".hexToData\
     merkleRoot:@"3ba3edfd7a7b12b27ac72c3e67768f617fC81bc3888a51323a9fb8aa4b1e5e4a".hexToData\
     timestamp:1296688602.0 - NSTimeIntervalSince1970 target:0x1d00ffffu nonce:414098458u totalTransactions:1\
-    hashes:@"3ba3edfd7a7b12b27ac72c3e67768f617fC81bc3888a51323a9fb8aa4b1e5e4a".hexToData flags:@"00".hexToData height:0]
+    hashes:@"3ba3edfd7a7b12b27ac72c3e67768f617fC81bc3888a51323a9fb8aa4b1e5e4a".hexToData flags:@"00".hexToData height:0
+    parentBlock:nil]
 
 static const struct { uint32_t height; char *hash; time_t timestamp; uint32_t target; } checkpoint_array[] = {
     {  20160, "000000001cf5440e7c9ae69f655759b17a32aad141896defd55bb895b7cfc44e", 1345001466, 0x1c4d1756u },
@@ -83,7 +84,8 @@ static const char *dns_seeds[] = {
     prevBlock:@"0000000000000000000000000000000000000000000000000000000000000000".hexToData\
     merkleRoot:@"5b2a3f53f605d62c53e62932dac6925e3d74afa5a4b459745c36d42d0ed26a69".hexToData\
     timestamp:1386325540.0 - NSTimeIntervalSince1970 target:0x1e0ffff0L nonce:99943u totalTransactions:1\
-    hashes:@"5b2a3f53f605d62c53e62932dac6925e3d74afa5a4b459745c36d42d0ed26a69".hexToData flags:@"00".hexToData height:0]
+    hashes:@"5b2a3f53f605d62c53e62932dac6925e3d74afa5a4b459745c36d42d0ed26a69".hexToData flags:@"00".hexToData height:0\
+    parentBlock:nil]
 
 // blockchain checkpoints, these are also used as starting points for partial chain downloads, so they need to be at
 // difficulty transition boundaries in order to verify the block difficulty at the immediately following transition
@@ -524,7 +526,7 @@ static const char *dns_seeds[] = {
             _blocks[hash] = [[BRMerkleBlock alloc] initWithBlockHash:hash version:1 prevBlock:nil merkleRoot:nil
                              timestamp:checkpoint_array[i].timestamp - NSTimeIntervalSince1970
                              target:checkpoint_array[i].target nonce:0 totalTransactions:0 hashes:nil flags:nil
-                             height:checkpoint_array[i].height];
+                             height:checkpoint_array[i].height parentBlock:nil];
             self.checkpoints[@(checkpoint_array[i].height)] = hash;
         }
 
@@ -578,7 +580,7 @@ static const char *dns_seeds[] = {
                       version:1 prevBlock:nil merkleRoot:nil
                       timestamp:checkpoint_array[i].timestamp - NSTimeIntervalSince1970
                       target:checkpoint_array[i].target nonce:0 totalTransactions:0 hashes:nil flags:nil
-                      height:checkpoint_array[i].height];
+                      height:checkpoint_array[i].height parentBlock:nil];
     }
 
     if (! _lastBlock) _lastBlock = GENESIS_BLOCK;
