@@ -947,7 +947,54 @@
     }
 }
 
+- (void)testScryptAuxPowHeader
+{
+
+    NSData *block = @"0200000021c5d624762446d36e81b788b191948396bddffa88dea49a79ec15d4bd1c4be5843fca1984630c7d1b0ea26569908cc03b35a0853c047d4087153b6e75747733be9bd65345a5621b804e6e9c0101000000010000000000000000000000000000000000000000000000000000000000000000ffffffff2603a2d404062f503253482f04bf9bd653080601d937010000000c2f436f696e4d696e6550572f000000000100a40731af0500001976a91402e119c481b2422cd748766669d73f867649eeaa88ac00000000".hexToData;
+
+    BRMerkleBlock *b = [BRMerkleBlock blockWithMessage:block];
+
+    XCTAssertEqualObjects(b.blockHash,
+                          @"e6e6d9e221fc2525505586daba87c233921d6682d8e19e4a0a6fc5e5bceafa01".hexToData.reverse,
+                          @"[BRMerkleBlock blockHash]");
+
+    XCTAssertEqualObjects(b.powHash,
+                          @"00000000003e16b3cf2ff84e241d7c762178f574d0218ca8545b1b681f4006df".hexToData.reverse,
+                          @"[BRMerkleBlock blockHash]");
+
+    XCTAssertEqualObjects(b.powHash,
+                          @"00000000003e16b3cf2ff84e241d7c762178f574d0218ca8545b1b681f4006df".hexToData.reverse,
+                          @"[BRMerkleBlock blockHash]");
+
+    return;
+}
+
+
 #pragma mark - testMerkleBlock
+
+- (void)testMerkleBlockWithAuxPow
+{
+    // block 390,000
+    NSData *block = @"020162003820a8f9feb8c7e1f02b2be16b0b1ab91c4c6e1876391842cb2c6c897766ad16b77297ce1a87cc8d8164ca7e524d53961a74b994513659c513501436630a1928a0ca23543c87051b0000000001000000010000000000000000000000000000000000000000000000000000000000000000ffffffff520334df09062f503253482f04a1ca235408fabe6d6d156139a6c9394d274a42b12134906dad0c0c9fd69484f4aa93c488d4c156013d0100000000000000705fd3e11e0000000c2f434d65753135323132372f000000000150cc172a010000001976a91411fde3131d4a59d9de9d6d9390f8baeebf50396088ac000000006a1592ba358800aace34cf92ee5dfed5fe8afda130dc57730b50382154b7ae1704f0f523b7ff02d730fa841b8a2ed971a10f1ba05e0faa60e70a6c1b370894c7623e911bd63f886086ced8211db19a96ad6d9b38a010f7f532d865958f980cd72e241fc2605fcd55fe2c5605a9ffd9cdd3978329abd0e7e0fce9ce5a3e8e05b90d1b8e541b4f85dc52f13d22c5238bda7092d6d770dd40e42bd1dc65927be12616000000000000000000020000006eb7be48db8d8f6e86e47f87f41657627e31d8a10e7bcf0ec0ab89f9f09145cddc7fbabbbf903fefc0d4996ca763f6a686cb50860b291ee58fc7eef1996fde5f75ca2354100a021b11a21306".hexToData;
+
+    BRMerkleBlock *b = [BRMerkleBlock blockWithMessage:block];
+
+    XCTAssertEqualObjects(b.blockHash,
+                          @"156139a6c9394d274a42b12134906dad0c0c9fd69484f4aa93c488d4c156013d".hexToData.reverse,
+                          @"[BRMerkleBlock blockHash]");
+
+    XCTAssertEqualObjects(b.powHash,
+                          nil,
+                          @"[BRMerkleBlock parentBlock.powHash]");
+
+
+    XCTAssertEqualObjects(b.parentBlock.powHash,
+                          @"efec8d8ab4254d3504f6edd00f22204a065744e5a0e9a9595402050000000000".hexToData,
+                          @"[BRMerkleBlock blockHash]");
+
+    XCTAssertTrue(b.valid, @"[BRMerkleBlock isValid]");
+}
+
 
 - (void)testMerkleBlock
 {

@@ -31,6 +31,8 @@
 @interface BRMerkleBlock : NSObject
 
 @property (nonatomic, readonly) NSData *blockHash;
+@property (nonatomic, readonly) NSData *powHash;
+
 @property (nonatomic, readonly) uint32_t version;
 @property (nonatomic, readonly) NSData *prevBlock;
 @property (nonatomic, readonly) NSData *merkleRoot;
@@ -41,6 +43,8 @@
 @property (nonatomic, readonly) NSData *hashes;
 @property (nonatomic, readonly) NSData *flags;
 @property (nonatomic, assign) uint32_t height;
+
+@property (nonatomic, readonly) BRMerkleBlock *parentBlock;
 
 @property (nonatomic, readonly) NSArray *txHashes; // the matched tx hashes in the block
 
@@ -53,11 +57,14 @@
 
 // message can be either a merkleblock or header message
 + (instancetype)blockWithMessage:(NSData *)message;
++ (instancetype)blockWithMessage:(NSData *)message andParentBlock:(BRMerkleBlock *)parentBlock;
 
 - (instancetype)initWithMessage:(NSData *)message;
+- (instancetype)initWithMessage:(NSData *)message andParentBlock:(BRMerkleBlock *)parentBlock;
 - (instancetype)initWithBlockHash:(NSData *)blockHash version:(uint32_t)version prevBlock:(NSData *)prevBlock
 merkleRoot:(NSData *)merkleRoot timestamp:(NSTimeInterval)timestamp target:(uint32_t)target nonce:(uint32_t)nonce
-totalTransactions:(uint32_t)totalTransactions hashes:(NSData *)hashes flags:(NSData *)flags height:(uint32_t)height;
+totalTransactions:(uint32_t)totalTransactions hashes:(NSData *)hashes flags:(NSData *)flags height:(uint32_t)height
+parentBlock:(NSData*)parentBlock;
 
 // true if the given tx hash is known to be included in the block
 - (BOOL)containsTxHash:(NSData *)txHash;

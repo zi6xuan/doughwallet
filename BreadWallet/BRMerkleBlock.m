@@ -24,6 +24,7 @@
 //  THE SOFTWARE.
 
 #import "BRMerkleBlock.h"
+#import "BRAuxPowMessage.h"
 #import "NSMutableData+Bitcoin.h"
 #import "NSData+Bitcoin.h"
 #import "NSData+Hash.h"
@@ -32,6 +33,8 @@
 #define MAX_TIME_DRIFT    (2*60*60)     // the furthest in the future a block is allowed to be timestamped
 #define MAX_PROOF_OF_WORK 0x1d00ffffu   // highest value for difficulty target (higher values are less difficult)
 #define TARGET_TIMESPAN   (14*24*60*60) // the targeted timespan between difficulty target adjustments
+
+#define BLOCK_VERSION_AUXPOW_AUXBLOCK 0x00620102
 
 // convert difficulty target format to bignum, as per: https://github.com/bitcoin/bitcoin/blob/master/src/uint256.h#L323
 static void setCompact(BIGNUM *bn, uint32_t compact)
@@ -107,6 +110,18 @@ static uint32_t getCompact(const BIGNUM *bn)
 {
     return [[self alloc] initWithMessage:message];
 }
++ (instancetype)blockWithMessage:(NSData *)message andParentBlock:(BRMerkleBlock *)parentBlock
+{
+    return [[self alloc] initWithMessage:message andParentBlock:parentBlock];
+}
+
+- (instancetype)initWithMessage:(NSData *)message andParentBlock:(BRMerkleBlock *)parentBlock
+{
+    self = [self initWithMessage:message];
+    _parentBlock = parentBlock;
+    return self;
+}
+
 
 - (instancetype)initWithMessage:(NSData *)message
 {
@@ -128,6 +143,13 @@ static uint32_t getCompact(const BIGNUM *bn)
     off += sizeof(uint32_t);
     _nonce = [message UInt32AtOffset:off];
     off += sizeof(uint32_t);
+    if ([self isAuxPow]) {
+        BRAuxPowMessage *auxpowmessage = [BRAuxPowMessage blockWithMessage:[message subdataWithRange:NSMakeRange(off, message.length - off)]];
+        off += auxpowmessage.length;
+        _parentBlock = [BRMerkleBlock blockWithMessage:[auxpowmessage constructParentHeader]];
+    } else {
+        _powHash = [message subdataWithRange:NSMakeRange(0, 80)].SCRYPT;
+    }
     _totalTransactions = [message UInt32AtOffset:off];
     off += sizeof(uint32_t);
     len = (NSUInteger)[message varIntAtOffset:off length:&l]*CC_SHA256_DIGEST_LENGTH;
@@ -143,6 +165,7 @@ static uint32_t getCompact(const BIGNUM *bn)
 - (instancetype)initWithBlockHash:(NSData *)blockHash version:(uint32_t)version prevBlock:(NSData *)prevBlock
 merkleRoot:(NSData *)merkleRoot timestamp:(NSTimeInterval)timestamp target:(uint32_t)target nonce:(uint32_t)nonce
 totalTransactions:(uint32_t)totalTransactions hashes:(NSData *)hashes flags:(NSData *)flags height:(uint32_t)height
+parentBlock:(NSData*)parentBlock
 {
     if (! (self = [self init])) return nil;
     
@@ -157,6 +180,7 @@ totalTransactions:(uint32_t)totalTransactions hashes:(NSData *)hashes flags:(NSD
     _hashes = hashes;
     _flags = flags;
     _height = height;
+    _parentBlock = [BRMerkleBlock blockWithMessage:parentBlock];
     
     return self;
 }
@@ -178,28 +202,46 @@ totalTransactions:(uint32_t)totalTransactions hashes:(NSData *)hashes flags:(NSD
     return _blockHash;
 }
 
+- (BOOL)isMerkleRootValid
+{
+    NSMutableData *d = [NSMutableData data];
+    int hashIdx = 0, flagIdx = 0;
+    NSData *merkleRoot =
+    [self _walk:&hashIdx :&flagIdx :0 :^id (NSData *hash, BOOL flag) {
+        return hash;
+    } :^id (id left, id right) {
+        [d setData:left];
+        [d appendData:right ? right : left]; // if right branch is missing, duplicate left branch
+        return d.SHA256_2;
+    }];
+
+    return !(_totalTransactions > 0 && ! [merkleRoot isEqual:_merkleRoot]);
+}
+
 // true if merkle tree and timestamp are valid, and proof-of-work matches the stated difficulty target
 // NOTE: this only checks if the block difficulty matches the difficulty target in the header, it does not check if the
 // target is correct for the block's height in the chain, use verifyDifficultyFromPreviousBlock: for that
 - (BOOL)isValid
 {
-    NSMutableData *d = [NSMutableData data];
-    BIGNUM target, maxTarget, hash;
-    int hashIdx = 0, flagIdx = 0;
-    NSData *merkleRoot =
-        [self _walk:&hashIdx :&flagIdx :0 :^id (NSData *hash, BOOL flag) {
-            return hash;
-        } :^id (id left, id right) {
-            [d setData:left];
-            [d appendData:(right) ? right : left]; // if right branch is missing, duplicate left branch
-            return d.SHA256_2;
-        }];
-    
-    if (_totalTransactions > 0 && ! [merkleRoot isEqual:_merkleRoot]) return NO; // merkle root check failed
+    if ([self isAuxPow]) {
+        if (![_parentBlock isMerkleRootValid]) return NO;
+    } else {
+        if (![self isMerkleRootValid]) return NO;
+    }
+
+    BIGNUM hash, target, maxTarget;
     
     //TODO: use estimated network time instead of system time (avoids timejacking attacks and misconfigured time)
-    if (_timestamp > [NSDate timeIntervalSinceReferenceDate] + MAX_TIME_DRIFT) return NO; // timestamp too far in future
-    
+    NSTimeInterval max_time = [NSDate timeIntervalSinceReferenceDate] + MAX_TIME_DRIFT;
+
+    NSTimeInterval checktime = _timestamp;
+    if (_version == BLOCK_VERSION_AUXPOW_AUXBLOCK) {
+        checktime = _parentBlock.timestamp;
+    }
+
+    if (checktime > max_time) return NO;
+    if (checktime < 0) return NO;
+
     // check proof-of-work
     BN_init(&target);
     BN_init(&maxTarget);
@@ -207,9 +249,21 @@ totalTransactions:(uint32_t)totalTransactions hashes:(NSData *)hashes flags:(NSD
     setCompact(&maxTarget, MAX_PROOF_OF_WORK);
     if (BN_cmp(&target, BN_value_one()) < 0 || BN_cmp(&target, &maxTarget) > 0) return NO; // target out of range
 
+    NSData* h;
+
+    if (_version == BLOCK_VERSION_AUXPOW_AUXBLOCK) {
+        h = _parentBlock.powHash;
+    } else {
+        h = _powHash;
+    }
+
     BN_init(&hash);
-    BN_bin2bn(_blockHash.reverse.bytes, (int)_blockHash.length, &hash);
-    if (BN_cmp(&hash, &target) > 0) return NO; // block not as difficult as target (smaller values are more difficult)
+    BN_bin2bn(h.reverse.bytes, (int)h.length, &hash);
+
+    if (BN_cmp(&hash, &target) > 0) {
+        return NO;
+    }
+
 
     return YES;
 }
@@ -335,9 +389,19 @@ totalTransactions:(uint32_t)totalTransactions hashes:(NSData *)hashes flags:(NSD
     return *(const NSUInteger *)_blockHash.bytes;
 }
 
+- (BOOL)isAuxPow
+{
+    return _version == BLOCK_VERSION_AUXPOW_AUXBLOCK;
+}
+
 - (BOOL)isEqual:(id)object
 {
-    return self == object || ([object isKindOfClass:[BRMerkleBlock class]] && [[object blockHash] isEqual:_blockHash]);
+    if (self == object) return true;
+    if (!([object isKindOfClass:[BRMerkleBlock class]])) return false;
+    if ([[object blockHash] isEqual:_blockHash]) return true;
+    if ([object isAuxPow] && [self isAuxPow] && [[[object parentBlock] blockHash] isEqual:[_parentBlock blockHash]]) return true;
+
+    return false;
 }
 
 @end

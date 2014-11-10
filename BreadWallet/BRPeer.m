@@ -26,6 +26,7 @@
 #import "BRPeer.h"
 #import "BRTransaction.h"
 #import "BRMerkleBlock.h"
+#import "BRAuxPowMessage.h"
 #import "NSMutableData+Bitcoin.h"
 #import "NSString+Base58.h"
 #import "NSData+Bitcoin.h"
@@ -49,6 +50,8 @@
 #define LOCAL_HOST         0x7f000001
 #define ZERO_HASH          @"0000000000000000000000000000000000000000000000000000000000000000".hexToData
 #define CONNECT_TIMEOUT    3.0
+
+#define BLOCK_VERSION_AUXPOW_AUXBLOCK 0x00620102
 
 typedef enum {
     error = 0,
@@ -753,18 +756,41 @@ services:(uint64_t)services
         return;
     }
     
-    for (NSUInteger off = l; off < l + 81*count; off += 81) {
-        BRMerkleBlock *block = [BRMerkleBlock blockWithMessage:[message subdataWithRange:NSMakeRange(off, 81)]];
-    
-        if (! block.valid) {
-            [self error:@"invalid block header %@", block.blockHash];
-            return;
-        }
+    // schedule this on the runloop to ensure the above get message is sent first for faster chain download
+        for (NSUInteger off = l; off < l + 81*count; off += 81) {
+
+            uint32_t blockversion = [message UInt32AtOffset:off];
+
+            BRMerkleBlock *block;
+
+            if (blockversion == BLOCK_VERSION_AUXPOW_AUXBLOCK) {
+                NSData* blockHeader = [message subdataWithRange:NSMakeRange(off, 80)];
+                off += 80;
+
+                BRAuxPowMessage *auxpowmessage = [BRAuxPowMessage blockWithMessage:[message subdataWithRange:NSMakeRange(off, message.length - off)]];
+
+                off += auxpowmessage.length;
+
+                uint8_t nulltermination = [message UInt8AtOffset:off];
+                assert(nulltermination == 0x00);
+                off += sizeof(uint8_t);
+
+                block = [BRMerkleBlock blockWithMessage:blockHeader andParentBlock:[BRMerkleBlock blockWithMessage:[auxpowmessage constructParentHeader]]];
+
+                off -= 81;
+
+            } else {
+                block = [BRMerkleBlock blockWithMessage:[message subdataWithRange:NSMakeRange(off, 81)]];
+            }
+
+            if (! block.valid) {
+                [self error:@"invalid block header %@", block.blockHash];
+                return;
+            }
 
         dispatch_async(self.delegateQueue, ^{
             [self.delegate peer:self relayedBlock:block];
         });
-    }
 }
 
 - (void)acceptGetaddrMessage:(NSData *)message
