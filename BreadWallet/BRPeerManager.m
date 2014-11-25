@@ -1248,7 +1248,7 @@ static const char *dns_seeds[] = {
     }
 
     // verify block difficulty
-    if (! [block verifyDifficultyFromPreviousBlock:prev andTransitionTime:transitionTime]) {
+    if (! [block verifyDifficultyFromPreviousBlock:prev andTransitionTime:transitionTime andStoredBlocks:self.blocks]) {
         NSLog(@"%@:%d relayed block with invalid difficulty target %x, blockHash: %@", peer.host, peer.port,
               block.target, block.blockHash);
         [self peerMisbehavin:peer];
