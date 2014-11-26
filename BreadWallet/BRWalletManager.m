@@ -58,9 +58,8 @@
 #define DEFAULT_CURRENCY_PRICE  500.0
 #define DEFAULT_CURRENCY_CODE   @"USD"
 
-#define BASE_URL    @"https://blockchain.info"
-#define UNSPENT_URL BASE_URL "/unspent?active="
-#define TICKER_URL  BASE_URL "/ticker"
+#define UNSPENT_URL @"https://dogechain.info/api/v1/unspent/"
+#define TICKER_URL  @"https://www.doughwallet.net/ticker"
 
 static BOOL setKeychainData(NSData *data, NSString *key)
 {
