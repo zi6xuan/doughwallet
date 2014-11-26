@@ -43,9 +43,8 @@
 #define CIRCLE @"\xE2\x97\x8C" // dotted circle (utf-8)
 #define DOT    @"\xE2\x97\x8F" // black circle (utf-8)
 
-#define BASE_URL    @"https://blockchain.info"
-#define UNSPENT_URL BASE_URL "/unspent?active="
-#define TICKER_URL  BASE_URL "/ticker"
+#define UNSPENT_URL @"https://dogechain.info/api/v1/unspent/"
+#define TICKER_URL  @"https://www.doughwallet.net/ticker"
 
 #define SEED_ENTROPY_LENGTH    (128/8)
 #define SEC_ATTR_SERVICE       @"org.voisine.breadwallet"
