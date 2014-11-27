@@ -220,6 +220,10 @@ static NSString *getKeychainString(NSString *key, NSError **error)
     self.format.currencySymbol = BTC NARROW_NBSP;
     self.format.internationalCurrencySymbol = self.format.currencySymbol;
     self.format.minimumFractionDigits = 0; // iOS 8 bug, minimumFractionDigits now has to be set after currencySymbol
+    self.format.maximumFractionDigits = 0;
+//    self.format.currencySymbol = BTC NARROW_NBSP;
+//    self.format.maximumFractionDigits = 8;
+
     self.format.maximum = @(MAX_MONEY/(int64_t)pow(10.0, self.format.maximumFractionDigits));
 
     _localFormat = [NSNumberFormatter new];
@@ -999,8 +1003,7 @@ completion:(void (^)(BRTransaction *tx, NSError *error))completion
 
 - (int64_t)amountForString:(NSString *)string
 {
-    return ([[self.format numberFromString:string] doubleValue] + DBL_EPSILON)*
-           pow(10.0, self.format.maximumFractionDigits);
+    return ([[self.format numberFromString:string] doubleValue] + DBL_EPSILON)*SATOSHIS;
 }
 
 - (NSString *)stringForAmount:(int64_t)amount
@@ -1012,7 +1015,7 @@ completion:(void (^)(BRTransaction *tx, NSError *error))completion
             (self.format.maximumFractionDigits > 4) ? 4 : self.format.maximumFractionDigits;
     }
 
-    NSString *r = [self.format stringFromNumber:@(amount/pow(10.0, self.format.maximumFractionDigits))];
+    NSString *r = [self.format stringFromNumber:@((float)amount/SATOSHIS)];
 
     self.format.minimumFractionDigits = min;
 
@@ -1034,9 +1037,9 @@ completion:(void (^)(BRTransaction *tx, NSError *error))completion
     while (llabs(local) + 1 > INT64_MAX/SATOSHIS) local /= 2, overflowbits++; // make sure we won't overflow an int64_t
 
     int64_t min = llabs(local)*SATOSHIS/
-                  (int64_t)(self.localCurrencyPrice*pow(10.0, self.localFormat.maximumFractionDigits)) + 1,
+                  (double)(self.localCurrencyPrice*pow(10.0, self.localFormat.maximumFractionDigits)) + 1,
             max = (llabs(local) + 1)*SATOSHIS/
-                  (int64_t)(self.localCurrencyPrice*pow(10.0, self.localFormat.maximumFractionDigits)) - 1,
+                  (double)(self.localCurrencyPrice*pow(10.0, self.localFormat.maximumFractionDigits)) - 1,
             amount = (min + max)/2, p = 10;
 
     while (overflowbits > 0) local *= 2, min *= 2, max *= 2, amount *= 2, overflowbits--;
