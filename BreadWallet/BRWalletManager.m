@@ -149,7 +149,7 @@ static NSData *getKeychainData(NSString *key)
     self.format.currencySymbol = BTC NARROW_NBSP;
     self.format.internationalCurrencySymbol = self.format.currencySymbol;
     self.format.minimumFractionDigits = 0; // iOS 8 bug, minimumFractionDigits now has to be set after currencySymbol
-    self.format.maximumFractionDigits = 2;
+    self.format.maximumFractionDigits = 0;
 //    self.format.currencySymbol = BTC NARROW_NBSP;
 //    self.format.maximumFractionDigits = 8;
 
@@ -590,8 +590,7 @@ completion:(void (^)(BRTransaction *tx, NSError *error))completion
 
 - (int64_t)amountForString:(NSString *)string
 {
-    return ([[self.format numberFromString:string] doubleValue] + DBL_EPSILON)*
-           pow(10.0, self.format.maximumFractionDigits);
+    return ([[self.format numberFromString:string] doubleValue] + DBL_EPSILON)*SATOSHIS;
 }
 
 - (NSString *)stringForAmount:(int64_t)amount
@@ -603,7 +602,7 @@ completion:(void (^)(BRTransaction *tx, NSError *error))completion
             self.format.maximumFractionDigits > 4 ? 4 : self.format.maximumFractionDigits;
     }
 
-    NSString *r = [self.format stringFromNumber:@(amount/pow(10.0, self.format.maximumFractionDigits))];
+    NSString *r = [self.format stringFromNumber:@((float)amount/SATOSHIS)];
 
     self.format.minimumFractionDigits = min;
 
@@ -623,9 +622,9 @@ completion:(void (^)(BRTransaction *tx, NSError *error))completion
     if (local == 0) return 0;
 
     int64_t min = llabs(local)*SATOSHIS/
-                  (int64_t)(self.localCurrencyPrice*pow(10.0, self.localFormat.maximumFractionDigits)) + 1,
+                  (double)(self.localCurrencyPrice*pow(10.0, self.localFormat.maximumFractionDigits)) + 1,
             max = (llabs(local) + 1)*SATOSHIS/
-                  (int64_t)(self.localCurrencyPrice*pow(10.0, self.localFormat.maximumFractionDigits)) - 1,
+                  (double)(self.localCurrencyPrice*pow(10.0, self.localFormat.maximumFractionDigits)) - 1,
             amount = (min + max)/2, p = 10;
 
     if (amount >= MAX_MONEY) return (local < 0) ? -MAX_MONEY : MAX_MONEY;
