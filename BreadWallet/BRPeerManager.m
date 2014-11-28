@@ -527,6 +527,7 @@ static const char *dns_seeds[] = {
                              timestamp:checkpoint_array[i].timestamp - NSTimeIntervalSince1970
                              target:checkpoint_array[i].target nonce:0 totalTransactions:0 hashes:nil flags:nil
                              height:checkpoint_array[i].height parentBlock:nil];
+            assert([_blocks[hash] isValid]);
             self.checkpoints[@(checkpoint_array[i].height)] = hash;
         }
 
