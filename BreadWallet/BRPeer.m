@@ -41,7 +41,7 @@
 #define MAX_MSG_LENGTH     0x02000000
 #define MAX_GETDATA_HASHES 50000
 #define ENABLED_SERVICES   0     // we don't provide full blocks to remote nodes
-#define PROTOCOL_VERSION   70002
+#define PROTOCOL_VERSION   70003
 #if TX_FEE_0_8_RULES
 #define MIN_PROTO_VERSION  70001 // peers earlier than this protocol version not supported (SPV mode required)
 #else
