@@ -379,36 +379,16 @@ sequence:(uint32_t)sequence
     return p/self.size;
 }
 
-// the block height after which the transaction can be confirmed without a fee, or TX_UNCONFIRMRED for never
-- (uint32_t)blockHeightUntilFreeForAmounts:(NSArray *)amounts withBlockHeights:(NSArray *)heights
-{
-    if (amounts.count != self.hashes.count || heights.count != self.hashes.count ||
-        self.size > TX_FREE_MAX_SIZE || [heights containsObject:@(TX_UNCONFIRMED)]) {
-        return TX_UNCONFIRMED;
-    }
-
-    for (NSNumber *amount in self.amounts) {
-        if (amount.unsignedLongLongValue < TX_MIN_OUTPUT_AMOUNT) return TX_UNCONFIRMED;
-    }
-
-    uint64_t amountTotal = 0, amountsByHeights = 0;
-    
-    for (NSUInteger i = 0; i < amounts.count; i++) {
-        amountTotal += [amounts[i] unsignedLongLongValue];
-        amountsByHeights += [amounts[i] unsignedLongLongValue]*[heights[i] unsignedLongLongValue];
-    }
-    
-    if (amountTotal == 0) return TX_UNCONFIRMED;
-    
-    // this could possibly overflow a uint64 for very large input amounts and far in the future block heights,
-    // however we should be okay up to the largest current bitcoin balance in existence for the next 40 years or so,
-    // and the worst case is paying a transaction fee when it's not needed
-    return (uint32_t)((TX_FREE_MIN_PRIORITY*(uint64_t)self.size + amountsByHeights + amountTotal - 1ULL)/amountTotal);
-}
-
 - (uint64_t)standardFee
 {
-    return ((self.size + 999)/1000)*TX_FEE_PER_KB;
+    uint64_t fee = ((self.size + 999)/1000)*TX_FEE_PER_KB;
+    // Dogecoin: dust spam protection fee
+    for (NSNumber *amt in self.outputAmounts) {
+        if (amt.unsignedLongLongValue < SATOSHIS) {
+            fee += SATOSHIS;
+        }
+    }
+    return fee;
 }
 
 - (NSUInteger)hash

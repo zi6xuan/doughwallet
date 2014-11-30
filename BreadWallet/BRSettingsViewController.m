@@ -217,23 +217,6 @@
     }];
 }
 
-- (IBAction)toggle:(id)sender
-{
-    UILabel *l = (id)[[sender superview] viewWithTag:2];
-
-    [[NSUserDefaults standardUserDefaults] setBool:[sender isOn] forKey:SETTINGS_SKIP_FEE_KEY];
-
-    l.hidden = NO;
-    l.alpha = ([sender isOn]) ? 0.0 : 1.0;
-
-    [UIView animateWithDuration:0.2 animations:^{
-        l.alpha = ([sender isOn]) ? 1.0 : 0.0;
-    } completion:^(BOOL finished) {
-        l.alpha = 1.0;
-        l.hidden = ([sender isOn]) ? NO : YES;
-    }];
-}
-
 - (IBAction)about:(id)sender
 {
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"http://breadwallet.com"]];
@@ -263,7 +246,7 @@
             return 3;
 
         case 3:
-            return 2;
+            return 1;
 
         case 4:
             return 1;
@@ -278,12 +261,10 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *noTxIdent = @"NoTxCell", *transactionIdent = @"TransactionCell", *actionIdent = @"ActionCell",
-                    *toggleIdent = @"ToggleCell", *disclosureIdent = @"DisclosureCell", *restoreIdent = @"RestoreCell",
+                    *disclosureIdent = @"DisclosureCell", *restoreIdent = @"RestoreCell",
                     *selectorIdent = @"SelectorCell", *selectorOptionCell = @"SelectorOptionCell";
     UITableViewCell *cell = nil;
-    UILabel *textLabel, *unconfirmedLabel, *sentLabel, *localCurrencyLabel, *balanceLabel, *localBalanceLabel,
-            *toggleLabel;
-    UISwitch *toggleSwitch;
+    UILabel *textLabel, *unconfirmedLabel, *sentLabel, *localCurrencyLabel, *balanceLabel, *localBalanceLabel;
     BRCopyLabel *detailTextLabel;
     BRWalletManager *m = [BRWalletManager sharedInstance];
 
@@ -449,11 +430,6 @@
                     break;
 
                 case 1:
-                    cell = [tableView dequeueReusableCellWithIdentifier:toggleIdent];
-                    toggleLabel = (id)[cell viewWithTag:2];
-                    toggleSwitch = (id)[cell viewWithTag:3];
-                    toggleSwitch.on = [[NSUserDefaults standardUserDefaults] boolForKey:SETTINGS_SKIP_FEE_KEY];
-                    toggleLabel.hidden = (toggleSwitch.on) ? NO : YES;
                     break;
 
                 default:
@@ -495,8 +471,7 @@
                                      "or are having trouble sending (rescaning can take several minutes)", nil);
 
         case 4:
-            return NSLocalizedString(@"dogecoin network fees are only optional for high priority transactions "
-                                     "(removal may cause delays)", nil);
+            return nil;
 
         default:
             NSAssert(FALSE, @"%s:%d %s: unkown section %d", __FILE__, __LINE__,  __func__, (int)section);

@@ -317,17 +317,17 @@ seed:(NSData *(^)())seed
 #pragma mark - transactions
 
 // returns an unsigned transaction that sends the specified amount from the wallet to the given address
-- (BRTransaction *)transactionFor:(uint64_t)amount to:(NSString *)address withFee:(BOOL)fee
+- (BRTransaction *)transactionFor:(uint64_t)amount to:(NSString *)address
 {
     NSMutableData *script = [NSMutableData data];
 
     [script appendScriptPubKeyForAddress:address];
 
-    return [self transactionForAmounts:@[@(amount)] toOutputScripts:@[script] withFee:fee];
+    return [self transactionForAmounts:@[@(amount)] toOutputScripts:@[script]];
 }
 
 // returns an unsigned transaction that sends the specified amounts from the wallet to the specified output scripts
-- (BRTransaction *)transactionForAmounts:(NSArray *)amounts toOutputScripts:(NSArray *)scripts withFee:(BOOL)fee;
+- (BRTransaction *)transactionForAmounts:(NSArray *)amounts toOutputScripts:(NSArray *)scripts;
 {
     uint64_t amount = 0, balance = 0, standardFee = 0;
     BRTransaction *transaction = [BRTransaction new];
@@ -354,8 +354,9 @@ seed:(NSData *(^)())seed
         // assume we will be adding a change output (additional 34 bytes)
         //TODO: calculate the median of the lowest fee-per-kb that made it into the previous 144 blocks (24hrs)
         //NOTE: consider feedback effects if everyone uses the same algorithm to calculate fees, maybe add noise
-        if (fee) standardFee = ((transaction.size + 34 + 999)/1000)*TX_FEE_PER_KB;
-            
+
+
+        standardFee = transaction.standardFee;
         if (balance == amount + standardFee || balance >= amount + standardFee + TX_MIN_OUTPUT_AMOUNT) break;
     }
     
@@ -608,27 +609,6 @@ seed:(NSData *(^)())seed
     NSUInteger i = [self.transactions indexOfObject:transaction];
     
     return (i < self.balanceHistory.count) ? [self.balanceHistory[i] unsignedLongLongValue] : self.balance;
-}
-
-// Returns the block height after which the transaction is likely to be processed without including a fee. This is based
-// on the default satoshi client settings, but on the real network it's way off. In testing, a 0.01btc transaction that
-// was expected to take an additional 90 days worth of blocks to confirm was confirmed in under an hour by Eligius pool.
-- (uint32_t)blockHeightUntilFree:(BRTransaction *)transaction
-{
-    // TODO: calculate estimated time based on the median priority of free transactions in last 144 blocks (24hrs)
-    NSMutableArray *amounts = [NSMutableArray array], *heights = [NSMutableArray array];
-    NSUInteger i = 0;
-
-    for (NSData *hash in transaction.inputHashes) { // get the amounts and block heights of all the transaction inputs
-        BRTransaction *tx = self.allTx[hash];
-        uint32_t n = [transaction.inputIndexes[i++] unsignedIntValue];
-
-        if (n >= tx.outputAmounts.count) break;
-        [amounts addObject:tx.outputAmounts[n]];
-        [heights addObject:@(tx.blockHeight)];
-    };
-
-    return [transaction blockHeightUntilFreeForAmounts:amounts withBlockHeights:heights];
 }
 
 @end

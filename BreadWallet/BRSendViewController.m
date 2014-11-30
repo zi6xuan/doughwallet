@@ -58,7 +58,7 @@ static NSString *sanitizeString(NSString *s)
 
 @interface BRSendViewController ()
 
-@property (nonatomic, assign) BOOL clearClipboard, useClipboard, showTips, didAskFee, removeFee;
+@property (nonatomic, assign) BOOL clearClipboard, useClipboard, showTips;
 @property (nonatomic, strong) BRTransaction *tx, *sweepTx;
 @property (nonatomic, strong) BRPaymentRequest *request;
 @property (nonatomic, strong) BRPaymentProtocolRequest *protocolRequest;
@@ -289,32 +289,17 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
     }
     else {
         self.request = request;
-        self.tx = [m.wallet transactionFor:request.amount to:request.paymentAddress withFee:NO];
+        self.tx = [m.wallet transactionFor:request.amount to:request.paymentAddress];
 
         uint64_t amount = (! self.tx) ? request.amount :
                           [m.wallet amountSentByTransaction:self.tx] - [m.wallet amountReceivedFromTransaction:self.tx];
-        uint64_t fee = 0;
-
-        if (self.tx && [m.wallet blockHeightUntilFree:self.tx] <= [[BRPeerManager sharedInstance] lastBlockHeight] +1 &&
-            ! self.didAskFee && [[NSUserDefaults standardUserDefaults] boolForKey:SETTINGS_SKIP_FEE_KEY]) {
-            [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"dogecoin network fee", nil)
-              message:[NSString stringWithFormat:NSLocalizedString(@"the standard dogecoin network fee for this "
-                                                                   "transaction is %@ (%@)\n\nremoving this fee may "
-                                                                   "delay confirmation", nil),
-                       [m stringForAmount:self.tx.standardFee], [m localCurrencyStringForAmount:self.tx.standardFee]]
-              delegate:self cancelButtonTitle:nil
-              otherButtonTitles:NSLocalizedString(@"remove fee", nil), NSLocalizedString(@"continue", nil), nil] show];
-            return;
-        }
-
-        if (! self.removeFee) {
-            fee = self.tx.standardFee;
-            amount += fee;
-            self.tx = [m.wallet transactionFor:request.amount to:request.paymentAddress withFee:YES];
-            if (self.tx) {
-                amount = [m.wallet amountSentByTransaction:self.tx] - [m.wallet amountReceivedFromTransaction:self.tx];
-                fee = [m.wallet feeForTransaction:self.tx];
-            }
+        
+        uint64_t fee = self.tx.standardFee;
+        amount += fee;
+        self.tx = [m.wallet transactionFor:request.amount to:request.paymentAddress];
+        if (self.tx) {
+            amount = [m.wallet amountSentByTransaction:self.tx] - [m.wallet amountReceivedFromTransaction:self.tx];
+            fee = [m.wallet feeForTransaction:self.tx];
         }
 
         [self confirmAmount:amount fee:fee address:request.paymentAddress name:request.label memo:request.message
@@ -400,47 +385,34 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
         
         if (self.protoReqAmount > 0) {
             self.tx = [m.wallet transactionForAmounts:@[@(self.protoReqAmount)]
-                       toOutputScripts:@[protoReq.details.outputScripts.firstObject] withFee:NO];
+                       toOutputScripts:@[protoReq.details.outputScripts.firstObject]];
         }
         else {
             self.tx = [m.wallet transactionForAmounts:protoReq.details.outputAmounts
-                       toOutputScripts:protoReq.details.outputScripts withFee:NO];
-        }
-
-        if (self.tx && [m.wallet blockHeightUntilFree:self.tx] <= [[BRPeerManager sharedInstance] lastBlockHeight] +1 &&
-            ! self.didAskFee && [[NSUserDefaults standardUserDefaults] boolForKey:SETTINGS_SKIP_FEE_KEY]) {
-            [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"dogecoin network fee", nil)
-              message:[NSString stringWithFormat:NSLocalizedString(@"the standard dogecoin network fee for this "
-                                                                   "transaction is %@ (%@)\n\nremoving this fee may "
-                                                                   "delay confirmation", nil),
-                       [m stringForAmount:self.tx.standardFee], [m localCurrencyStringForAmount:self.tx.standardFee]]
-              delegate:self cancelButtonTitle:nil
-              otherButtonTitles:NSLocalizedString(@"remove fee", nil), NSLocalizedString(@"continue", nil), nil] show];
-            return;
+                       toOutputScripts:protoReq.details.outputScripts];
         }
 
         if (self.tx) {
             amount = [m.wallet amountSentByTransaction:self.tx] - [m.wallet amountReceivedFromTransaction:self.tx];
         }
-        
-        if (! self.removeFee) {
-            fee = self.tx.standardFee;
-            amount += fee;
 
-            if (self.protoReqAmount > 0) {
-                self.tx = [m.wallet transactionForAmounts:@[@(self.protoReqAmount)]
-                           toOutputScripts:@[protoReq.details.outputScripts.firstObject] withFee:YES];
-            }
-            else {
-                self.tx = [m.wallet transactionForAmounts:protoReq.details.outputAmounts
-                           toOutputScripts:protoReq.details.outputScripts withFee:YES];
-            }
+        fee = self.tx.standardFee;
+        amount += fee;
 
-            if (self.tx) {
-                amount = [m.wallet amountSentByTransaction:self.tx] - [m.wallet amountReceivedFromTransaction:self.tx];
-                fee = [m.wallet feeForTransaction:self.tx];
-            }
+        if (self.protoReqAmount > 0) {
+            self.tx = [m.wallet transactionForAmounts:@[@(self.protoReqAmount)]
+                       toOutputScripts:@[protoReq.details.outputScripts.firstObject]];
         }
+        else {
+            self.tx = [m.wallet transactionForAmounts:protoReq.details.outputAmounts
+                       toOutputScripts:protoReq.details.outputScripts];
+        }
+
+        if (self.tx) {
+            amount = [m.wallet amountSentByTransaction:self.tx] - [m.wallet amountReceivedFromTransaction:self.tx];
+            fee = [m.wallet feeForTransaction:self.tx];
+        }
+        
 
         for (NSData *script in protoReq.details.outputScripts) {
             NSString *addr = [NSString addressWithScriptPubKey:script];
@@ -468,7 +440,7 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
     [(id)v.customView startAnimating];
     [self.view addSubview:[v popIn]];
 
-    [m sweepPrivateKey:privKey withFee:YES completion:^(BRTransaction *tx, NSError *error) {
+    [m sweepPrivateKey:privKey completion:^(BRTransaction *tx, NSError *error) {
         [v popOut];
 
         if (error) {
@@ -650,7 +622,6 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
     self.protoReqAmount = 0;
     self.okAddress = nil;
     self.clearClipboard = self.useClipboard = NO;
-    self.didAskFee = self.removeFee = NO;
     self.scanButton.enabled = self.clipboardButton.enabled = YES;
     [self updateClipboardText];
 }
@@ -777,15 +748,6 @@ fromConnection:(AVCaptureConnection *)connection
 
     BRWalletManager *m = [BRWalletManager sharedInstance];
     BRPaymentProtocolRequest *protoReq = self.protocolRequest;
-    NSString *title = [alertView buttonTitleAtIndex:buttonIndex];
-
-    if ([title isEqual:NSLocalizedString(@"remove fee", nil)] || [title isEqual:NSLocalizedString(@"continue", nil)]) {
-        self.didAskFee = YES;
-        self.removeFee = ([title isEqual:NSLocalizedString(@"remove fee", nil)]) ? YES : NO;
-        if (self.protocolRequest) [self confirmProtocolRequest:self.protocolRequest];
-        else if (self.request) [self confirmRequest:self.request];
-        return;
-    }
 
     if (! self.tx) {
         [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"insufficient funds", nil) message:nil delegate:nil
