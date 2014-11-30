@@ -59,10 +59,10 @@ masterPublicKey:(NSData *)masterPublicKey seed:(NSData *(^)(NSString *authprompt
 - (NSArray *)addressesWithGapLimit:(NSUInteger)gapLimit internal:(BOOL)internal;
 
 // returns an unsigned transaction that sends the specified amount from the wallet to the given address
-- (BRTransaction *)transactionFor:(uint64_t)amount to:(NSString *)address withFee:(BOOL)fee;
+- (BRTransaction *)transactionFor:(uint64_t)amount to:(NSString *)address;
 
 // returns an unsigned transaction that sends the specified amounts from the wallet to the specified output scripts
-- (BRTransaction *)transactionForAmounts:(NSArray *)amounts toOutputScripts:(NSArray *)scripts withFee:(BOOL)fee;
+- (BRTransaction *)transactionForAmounts:(NSArray *)amounts toOutputScripts:(NSArray *)scripts;
 
 // sign any inputs in the given transaction that can be signed using private keys from the wallet
 - (BOOL)signTransaction:(BRTransaction *)transaction withPrompt:(NSString *)authprompt;
@@ -99,11 +99,5 @@ masterPublicKey:(NSData *)masterPublicKey seed:(NSData *(^)(NSString *authprompt
 
 // historical wallet balance after the given transaction, or current balance if transaction is not registered in wallet
 - (uint64_t)balanceAfterTransaction:(BRTransaction *)transaction;
-
-// returns the block height after which the transaction is likely to be processed without including a fee
-- (uint32_t)blockHeightUntilFree:(BRTransaction *)transaction;
-
-// fee that will be added for a transaction of the given size in bytes
-- (uint64_t)feeForTxSize:(NSUInteger)size;
 
 @end

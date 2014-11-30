@@ -58,7 +58,7 @@ static NSString *sanitizeString(NSString *s)
 
 @interface BRSendViewController ()
 
-@property (nonatomic, assign) BOOL clearClipboard, useClipboard, showTips, didAskFee, removeFee, canChangeAmount;
+@property (nonatomic, assign) BOOL clearClipboard, useClipboard, showTips, canChangeAmount;
 @property (nonatomic, strong) BRTransaction *sweepTx;
 @property (nonatomic, strong) BRPaymentProtocolRequest *request;
 @property (nonatomic, assign) uint64_t amount;
@@ -404,7 +404,7 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
                                   34];
             
                 [[[UIAlertView alloc]
-                  initWithTitle:NSLocalizedString(@"insufficient funds for bitcoin network fee", nil)
+                  initWithTitle:NSLocalizedString(@"insufficient funds for dogecoin network fee", nil)
                   message:[NSString stringWithFormat:NSLocalizedString(@"reduce payment amount by\n%@ (%@)?", nil),
                            [m stringForAmount:self.amount - amount],
                            [m localCurrencyStringForAmount:self.amount - amount]] delegate:self
@@ -425,7 +425,7 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
     
     if (! [m.wallet signTransaction:tx withPrompt:prompt]) {
         [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"couldn't make payment", nil)
-          message:NSLocalizedString(@"error signing bitcoin transaction", nil) delegate:nil
+          message:NSLocalizedString(@"error signing dogecoin transaction", nil) delegate:nil
           cancelButtonTitle:NSLocalizedString(@"ok", nil) otherButtonTitles:nil] show];
     }
     
@@ -526,7 +526,7 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
     [(id)v.customView startAnimating];
     [self.view addSubview:[v popIn]];
 
-    [m sweepPrivateKey:privKey withFee:YES completion:^(BRTransaction *tx, NSError *error) {
+    [m sweepPrivateKey:privKey completion:^(BRTransaction *tx, NSError *error) {
         [v popOut];
 
         if (error) {
@@ -716,8 +716,6 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
     self.amount = 0;
     self.okAddress = nil;
     self.clearClipboard = self.useClipboard = NO;
-    self.didAskFee = self.removeFee = NO;
-    self.canChangeAmount = NO;
     self.scanButton.enabled = self.clipboardButton.enabled = YES;
     [self updateClipboardText];
 }

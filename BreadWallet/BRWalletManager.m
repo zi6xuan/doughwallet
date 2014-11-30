@@ -47,7 +47,7 @@
 #define TICKER_URL  @"https://www.doughwallet.net/ticker"
 
 #define SEED_ENTROPY_LENGTH    (128/8)
-#define SEC_ATTR_SERVICE       @"org.voisine.breadwallet"
+#define SEC_ATTR_SERVICE       @"com.codefrosting.doughwallet"
 #define DEFAULT_CURRENCY_PRICE 500.0
 #define DEFAULT_CURRENCY_CODE  @"USD"
 #define DEFAULT_SPENT_LIMIT    SATOSHIS
@@ -176,7 +176,6 @@ static NSString *getKeychainString(NSString *key, NSError **error)
 @property (nonatomic, strong) BRWallet *wallet;
 @property (nonatomic, strong) id<BRKeySequence> sequence;
 @property (nonatomic, strong) Reachability *reachability;
-@property (nonatomic, assign) BOOL sweepFee;
 @property (nonatomic, strong) NSString *sweepKey;
 @property (nonatomic, strong) void (^sweepCompletion)(BRTransaction *tx, NSError *error);
 @property (nonatomic, strong) UIAlertView *alertView;
@@ -869,8 +868,8 @@ static NSString *getKeychainString(NSString *key, NSError **error)
         [defs setObject:@(self.localCurrencyPrice) forKey:LOCAL_CURRENCY_PRICE_KEY];
         [defs setObject:self.currencyCodes forKey:CURRENCY_CODES_KEY];
         [defs synchronize];
-        NSLog(@"exchange rate updated to %@/%@", [self localCurrencyStringForAmount:SATOSHIS],
-              [self stringForAmount:SATOSHIS]);
+        NSLog(@"exchange rate updated to %@/%@", [self localCurrencyStringForAmount:((int64_t)SATOSHIS*1000000)],
+              [self stringForAmount:((int64_t)SATOSHIS*1000000)]);
 
         if (! _wallet) return;
         
@@ -884,7 +883,7 @@ static NSString *getKeychainString(NSString *key, NSError **error)
 
 // given a private key, queries blockchain for unspent outputs and calls the completion block with a signed transaction
 // that will sweep the balance into the wallet (doesn't publish the tx)
-- (void)sweepPrivateKey:(NSString *)privKey withFee:(BOOL)fee
+- (void)sweepPrivateKey:(NSString *)privKey
 completion:(void (^)(BRTransaction *tx, NSError *error))completion
 {
     if (! completion) return;
@@ -900,7 +899,6 @@ completion:(void (^)(BRTransaction *tx, NSError *error))completion
         [v show];
 
         self.sweepKey = privKey;
-        self.sweepFee = fee;
         self.sweepCompletion = completion;
         return;
     }
@@ -978,7 +976,8 @@ completion:(void (^)(BRTransaction *tx, NSError *error))completion
         }
 
         // we will be adding a wallet output (additional 34 bytes)
-        if (fee) feeAmount = [self.wallet feeForTxSize:tx.size + 34];
+        //TODO: calculate the median of the lowest fee-per-kb that made it into the previous 144 blocks (24hrs)
+        standardFee = tx.standardFee;
 
         if (feeAmount + TX_MIN_OUTPUT_AMOUNT > balance) {
             completion(nil, [NSError errorWithDomain:@"BreadWallet" code:417 userInfo:@{NSLocalizedDescriptionKey:

@@ -345,17 +345,17 @@ masterPublicKey:(NSData *)masterPublicKey seed:(NSData *(^)(NSString *authprompt
 #pragma mark - transactions
 
 // returns an unsigned transaction that sends the specified amount from the wallet to the given address
-- (BRTransaction *)transactionFor:(uint64_t)amount to:(NSString *)address withFee:(BOOL)fee
+- (BRTransaction *)transactionFor:(uint64_t)amount to:(NSString *)address
 {
     NSMutableData *script = [NSMutableData data];
 
     [script appendScriptPubKeyForAddress:address];
 
-    return [self transactionForAmounts:@[@(amount)] toOutputScripts:@[script] withFee:fee];
+    return [self transactionForAmounts:@[@(amount)] toOutputScripts:@[script]];
 }
 
 // returns an unsigned transaction that sends the specified amounts from the wallet to the specified output scripts
-- (BRTransaction *)transactionForAmounts:(NSArray *)amounts toOutputScripts:(NSArray *)scripts withFee:(BOOL)fee;
+- (BRTransaction *)transactionForAmounts:(NSArray *)amounts toOutputScripts:(NSArray *)scripts;
 {
     uint64_t amount = 0, balance = 0, feeAmount = 0;
     BRTransaction *transaction = [BRTransaction new];
@@ -378,7 +378,7 @@ masterPublicKey:(NSData *)masterPublicKey seed:(NSData *(^)(NSString *authprompt
         if (! tx) continue;
         [transaction addInputHash:tx.txHash index:n script:tx.outputScripts[n]];
         balance += [tx.outputAmounts[n] unsignedLongLongValue];
-        if (fee) feeAmount = [self feeForTxSize:transaction.size + 34]; // assume we will add a change output (34 bytes)
+        feeAmount = [self feeForTxSize:transaction.size + 34]; // assume we will add a change output (34 bytes)
         if (balance == amount + feeAmount || balance >= amount + feeAmount + TX_MIN_OUTPUT_AMOUNT) break;
     }
     
@@ -625,27 +625,6 @@ masterPublicKey:(NSData *)masterPublicKey seed:(NSData *(^)(NSString *authprompt
     NSUInteger i = [self.transactions indexOfObject:transaction];
     
     return (i < self.balanceHistory.count) ? [self.balanceHistory[i] unsignedLongLongValue] : self.balance;
-}
-
-// Returns the block height after which the transaction is likely to be processed without including a fee. This is based
-// on the default satoshi client settings, but on the real network it's way off. In testing, a 0.01btc transaction that
-// was expected to take an additional 90 days worth of blocks to confirm was confirmed in under an hour by Eligius pool.
-- (uint32_t)blockHeightUntilFree:(BRTransaction *)transaction
-{
-    // TODO: calculate estimated time based on the median priority of free transactions in last 144 blocks (24hrs)
-    NSMutableArray *amounts = [NSMutableArray array], *heights = [NSMutableArray array];
-    NSUInteger i = 0;
-
-    for (NSData *hash in transaction.inputHashes) { // get the amounts and block heights of all the transaction inputs
-        BRTransaction *tx = self.allTx[hash];
-        uint32_t n = [transaction.inputIndexes[i++] unsignedIntValue];
-
-        if (n >= tx.outputAmounts.count) break;
-        [amounts addObject:tx.outputAmounts[n]];
-        [heights addObject:@(tx.blockHeight)];
-    };
-
-    return [transaction blockHeightUntilFreeForAmounts:amounts withBlockHeights:heights];
 }
 
 // fee that will be added for a transaction of the given size in bytes
