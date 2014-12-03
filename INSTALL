@@ -1,9 +1,9 @@
-build and install breadwallet
+build and install doughwallet
 -----------------------------
 
-1. clone the breadwallet git repository: 
+1. clone the doughwallet git repository:
 
-   `git clone https://github.com/voisine/breadwallet.git`
+   `git clone https://github.com/peritus/doughwallet.git`
 
 2. open breadwallet/BreadWallet.xcodeproj in XCode 5.0 or later
 

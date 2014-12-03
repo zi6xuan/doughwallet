@@ -1849,14 +1849,16 @@
                                             <constraint firstAttribute="height" constant="0.5" id="yy7-el-RW3"/>
                                         </constraints>
                                     </view>
-                                    <label opaque="NO" clipsSubviews="YES" tag="411" contentMode="left" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="233" translatesAutoresizingMaskIntoConstraints="NO" id="uvz-hk-Nr4">
-                                        <rect key="frame" x="44" y="22" width="233" height="156"/>
+                                    <label opaque="NO" clipsSubviews="YES" tag="411" contentMode="left" misplaced="YES" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="233" translatesAutoresizingMaskIntoConstraints="NO" id="uvz-hk-Nr4">
+                                        <rect key="frame" x="18" y="0.0" width="284" height="200"/>
                                         <gestureRecognizers/>
                                         <attributedString key="attributedText">
                                             <fragment>
-                                                <string key="content">breadwallet v%ver%%net%
+                                                <string key="content">doughwallet v%ver%%net%
+copyright © 2014 Filip Noetzel
 copyright © 2014 Aaron Voisine
 
+based on breadwallet
 this app is open source
 </string>
                                                 <attributes>
@@ -1865,7 +1867,7 @@ this app is open source
                                                 </attributes>
                                             </fragment>
                                             <fragment>
-                                                <string key="content">breadwallet.com
+                                                <string key="content">doughwallet.net
 
 </string>
                                                 <attributes>
@@ -2273,7 +2275,7 @@ if you ever lose your phone, you will need this phrase to recover your wallet</s
                     <navigationItem key="navigationItem" id="pSA-60-Zeg">
                         <nil key="title"/>
                         <view key="titleView" contentMode="scaleToFill" id="9QQ-Dq-BDV">
-                            <rect key="frame" x="113" y="15" width="94" height="15"/>
+                            <rect key="frame" x="113" y="14.5" width="94" height="15"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" image="breadwallet" translatesAutoresizingMaskIntoConstraints="NO" id="liH-WQ-uDo">
