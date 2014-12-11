@@ -23,7 +23,7 @@
 #define BRURLNotification  @"BRURLNotification"
 #define BRFileNotification @"BRFileNotification"
 
-#define SIGNATURE_COLOR    orangeColor
+#define SIGNATURE_COLOR    colorWithRed:224/255.0f green:209/255.0f blue:167/255.0f alpha:1.0f
 
 #if ! DEBUG
 #define NSLog(...)
