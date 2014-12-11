@@ -29,6 +29,8 @@
 #define DISPLAY_NAME [NSString stringWithFormat:LDQUOTE @"%@" RDQUOTE,\
                       NSBundle.mainBundle.infoDictionary[@"CFBundleDisplayName"]]
 
+#define SIGNATURE_COLOR    orangeColor
+
 #if ! DEBUG
 #define NSLog(...)
 #endif
