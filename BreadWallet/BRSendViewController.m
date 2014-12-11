@@ -557,7 +557,7 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
                     tipPoint:CGPointMake(self.scanButton.center.x, self.scanButton.center.y - 10.0)
                     tipDirection:BRBubbleTipDirectionDown];
     if (self.showTips) self.tipView.text = [self.tipView.text stringByAppendingString:@" (5/6)"];
-    self.tipView.backgroundColor = [UIColor orangeColor];
+    self.tipView.backgroundColor = [UIColor SIGNATURE_COLOR];
     self.tipView.font = [UIFont fontWithName:@"HelveticaNeue" size:15.0];
     [self.view addSubview:[self.tipView popIn]];
 }
