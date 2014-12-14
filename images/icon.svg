@@ -1,21 +1,39 @@
-<svg version="1.1" baseProfile="full"
-     xmlns="http://www.w3.org/2000/svg"
-     xmlns:xlink="http://www.w3.org/1999/xlink"
-     xmlns:ev="http://www.w3.org/2001/xml-events">
-<defs>
-  <linearGradient id="g" x1="0%" y1="0%" x2="0%" y2="100%">
-    <stop offset="0%" style="stop-color:rgb(255,184,116)" />
-    <stop offset="70%" style="stop-color:rgb(255,127,0)" />
-    <stop offset="100%" style="stop-color:rgb(255,127,0)" />
-  </linearGradient>
-</defs>
-<g id="i">
-<rect x="0" y="0" rx="50" ry="50" width="230" height="230" 
-      style="fill:url(#g)" />
-</g>
-<g id="b" stroke="white" opacity="0.67" fill-opacity="0" stroke-width="20"
-   stroke-linecap="round" transform="translate(80,50)">
-<path d="m0,0 v+80" /><circle cx="40" cy="80" r="40" />
-<path d="m-15,15 h+45" stroke-width="15" />
-</g>
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1"
+	 id="Layer_1"
+	 xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="1024px" height="1024px"
+	 viewBox="0 0 1024 1024" enable-background="new 0 0 1024 1024" xml:space="preserve">
+<switch>
+	<g>
+		<g id="i">
+    <linearGradient
+       id="SVGID_1_"
+       x1="0%"
+       y1="0%"
+       x2="0%"
+       y2="100%">
+      <stop
+         offset="0%"
+         style="stop-color:rgb(224,209,167);stop-opacity:1"
+         id="stop7" />
+      <stop
+         offset="70%"
+         style="stop-color:rgb(224,209,167);stop-opacity:1"
+         id="stop9" />
+      <stop
+         offset="100%"
+         style="stop-color:rgb(191,178,136);stop-opacity:1"
+         id="stop11" />
+    </linearGradient>
+
+			<path fill="url(#SVGID_1_)" d="M50,0h130c27.614,0,50,22.386,50,50v130c0,27.614-22.386,50-50,50H50c-27.614,0-50-22.386-50-50
+				V50C0,22.386,22.386,0,50,0z"/>
+		</g>
+		<g id="b" transform="translate(80,50)" opacity="0.67">
+			<path fill-opacity="0" stroke="#FFFFFF" stroke-width="20" stroke-linecap="round" d="M70,79V-1"/>
+			<circle fill-opacity="0" stroke="#FFFFFF" stroke-width="20" stroke-linecap="round" cx="30" cy="79" r="40"/>
+			<path fill-opacity="0" stroke="#FFFFFF" stroke-width="15" stroke-linecap="round" d="M40,14h45"/>
+		</g>
+	</g>
+</switch>
 </svg>
