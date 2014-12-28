@@ -2472,7 +2472,7 @@
 						CreatedOnToolsVersion = 6.1;
 					};
 					75D5F3BD191EC270004AB296 = {
-						DevelopmentTeam = 4R7S6N88W9;
+						DevelopmentTeam = LU63866G4F;
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
@@ -2483,6 +2483,7 @@
 						};
 					};
 					75D5F3E4191EC270004AB296 = {
+						DevelopmentTeam = LU63866G4F;
 						TestTargetID = 75D5F3BD191EC270004AB296;
 					};
 				};
