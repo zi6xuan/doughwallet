@@ -32,6 +32,7 @@
 #import "BRTransactionEntity.h"
 #import "BRAddressEntity.h"
 #import "NSString+Base58.h"
+#import "NSData+Hash.h"
 #import "NSMutableData+Bitcoin.h"
 #import "NSManagedObject+Sugar.h"
 #import "Reachability.h"
@@ -954,19 +955,24 @@ completion:(void (^)(BRTransaction *tx, NSError *error))completion
         //TODO: make sure not to create a transaction larger than TX_MAX_SIZE
         for (NSDictionary *utxo in json[@"unspent_outputs"]) {
             if (! [utxo isKindOfClass:[NSDictionary class]] ||
-                ! [utxo[@"tx_hash"] isKindOfClass:[NSString class]] || ! [utxo[@"tx_hash"] hexToData] ||
+                ! [utxo[@"tx_hash"] isKindOfClass:[NSString class]] ||
+                ! [utxo[@"tx_hash"] hexToData] ||
                 ! [utxo[@"tx_output_n"] isKindOfClass:[NSNumber class]] ||
-                ! [utxo[@"script"] isKindOfClass:[NSString class]] || ! [utxo[@"script"] hexToData] ||
-                ! [utxo[@"value"] isKindOfClass:[NSNumber class]]) {
+                ! [utxo[@"script"] isKindOfClass:[NSString class]] ||
+                ! [utxo[@"script"] hexToData]) {
                 completion(nil, [NSError errorWithDomain:@"BreadWallet" code:417 userInfo:@{NSLocalizedDescriptionKey:
                                  [NSString stringWithFormat:NSLocalizedString(@"unexpected response from %@", nil),
                                   u.host]}]);
                 return;
             }
 
-            [tx addInputHash:[utxo[@"tx_hash"] hexToData] index:[utxo[@"tx_output_n"] unsignedIntegerValue]
+            [tx addInputHash:[[utxo[@"tx_hash"] hexToData] reverse] index:[utxo[@"tx_output_n"] unsignedIntegerValue]
              script:[utxo[@"script"] hexToData]];
-            balance += [utxo[@"value"] unsignedLongLongValue];
+            NSNumberFormatter * f = [[NSNumberFormatter alloc] init];
+            [f setNumberStyle:NSNumberFormatterDecimalStyle];
+            NSNumber * value = [f numberFromString:utxo[@"value"]];
+
+            balance += [value longLongValue];
         }
 
         if (balance == 0) {
