@@ -8,8 +8,6 @@
 
 the simplest and most secure dogecoin wallet on any platform 
 
-![screenshot1](/images/screenshot1.jpg)
-
 **features:**
 
 - the first real dogecoin client for iOS 
@@ -20,8 +18,6 @@ the simplest and most secure dogecoin wallet on any platform
 - import password protected paper wallets 
 - "payment protocol" payee identity certification
 - open source
-
-![screenshot3](/images/screenshot3.jpg)
 
 **security:**
 
@@ -49,8 +45,6 @@ is possible because doughwallet is a
 [BIP32](https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki)
 "deterministic" wallet, meaning that all your dogecoin addresses and private
 keys are generated from a single "seed".
-
-![screenshot2](/images/screenshot2.jpg)
 
 doughwallet is open source and available under the terms of the MIT license.
 Source code is available at https://github.com/peritus/doughwallet
