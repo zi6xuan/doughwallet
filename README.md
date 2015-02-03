@@ -1,4 +1,4 @@
-![đ](/images/icon.png) doughwallet
+<img src="/images/icon.png" alt="đ" width="64" height="64"> doughwallet
 ----------------------------------
 
 [![download](/images/Download_on_the_App_Store_Badge_US-UK_135x40.png)]
