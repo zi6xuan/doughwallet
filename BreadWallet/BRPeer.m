@@ -787,6 +787,7 @@ services:(uint64_t)services
         dispatch_async(self.delegateQueue, ^{
             [self.delegate peer:self relayedBlock:block];
         });
+    }
 }
 
 - (void)acceptGetaddrMessage:(NSData *)message
