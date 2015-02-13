@@ -573,7 +573,7 @@ static const char *dns_seeds[] = {
                           version:1 prevBlock:nil merkleRoot:nil
                           timestamp:checkpoint_array[i].timestamp - NSTimeIntervalSince1970
                           target:checkpoint_array[i].target nonce:0 totalTransactions:0 hashes:nil flags:nil
-                          height:checkpoint_array[i].height];
+                          height:checkpoint_array[i].height parentBlock:nil];
         }
     }
 
