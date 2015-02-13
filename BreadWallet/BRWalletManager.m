@@ -38,8 +38,6 @@
 #import "Reachability.h"
 #import <LocalAuthentication/LocalAuthentication.h>
 
-#define BTC         @"\xc3\x90"     // capital D with stroke (utf-8)
-#define BITS        @"Koinu"
 #define NARROW_NBSP @"\xE2\x80\xAF" // narrow no-break space (utf-8)
 #define CIRCLE @"\xE2\x97\x8C" // dotted circle (utf-8)
 #define DOT    @"\xE2\x97\x8F" // black circle (utf-8)
