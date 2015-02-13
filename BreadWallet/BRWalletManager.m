@@ -981,9 +981,8 @@ completion:(void (^)(BRTransaction *tx, NSError *error))completion
 
         // we will be adding a wallet output (additional 34 bytes)
         //TODO: calculate the median of the lowest fee-per-kb that made it into the previous 144 blocks (24hrs)
-        standardFee = tx.standardFee;
 
-        if (standardFee + TX_MIN_OUTPUT_AMOUNT > balance) {
+        if (tx.standardFee + TX_MIN_OUTPUT_AMOUNT > balance) {
             completion(nil, [NSError errorWithDomain:@"DoughWallet" code:417 userInfo:@{NSLocalizedDescriptionKey:
                              NSLocalizedString(@"transaction fees would cost more than the funds available on this "
                                                "private key (due to tiny \"dust\" deposits)",nil)}]);
@@ -1170,7 +1169,7 @@ replacementString:(NSString *)string
                 [v show];
             }
             else {
-                [self sweepPrivateKey:key.privateKey withFee:self.sweepFee completion:self.sweepCompletion];
+                [self sweepPrivateKey:key.privateKey completion:self.sweepCompletion];
                 self.sweepKey = nil;
                 self.sweepCompletion = nil;
             }

@@ -330,45 +330,30 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
     
     if (self.amount == 0) {
         tx = [m.wallet transactionForAmounts:protoReq.details.outputAmounts
-              toOutputScripts:protoReq.details.outputScripts withFee:NO];
+              toOutputScripts:protoReq.details.outputScripts];
     }
     else {
         tx = [m.wallet transactionForAmounts:@[@(self.amount)]
-              toOutputScripts:@[protoReq.details.outputScripts.firstObject] withFee:NO];
-    }
-
-    if (tx && [m.wallet blockHeightUntilFree:tx] <= [[BRPeerManager sharedInstance] lastBlockHeight] + 1 &&
-        ! self.didAskFee && [[NSUserDefaults standardUserDefaults] boolForKey:SETTINGS_SKIP_FEE_KEY]) {
-        [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"bitcoin network fee", nil)
-          message:[NSString stringWithFormat:NSLocalizedString(@"the standard bitcoin network fee for this transaction "
-                                                               "is %@ (%@)\n\nremoving this fee may delay confirmation",
-                                                               nil),
-                   [m stringForAmount:[m.wallet feeForTxSize:tx.size]],
-                   [m localCurrencyStringForAmount:[m.wallet feeForTxSize:tx.size]]]
-          delegate:self cancelButtonTitle:nil
-          otherButtonTitles:NSLocalizedString(@"remove fee", nil), NSLocalizedString(@"continue", nil), nil] show];
-        return;
+              toOutputScripts:@[protoReq.details.outputScripts.firstObject]];
     }
 
     if (tx) amount = [m.wallet amountSentByTransaction:tx] - [m.wallet amountReceivedFromTransaction:tx];
     
-    if (! self.removeFee) {
-        fee = [m.wallet feeForTxSize:tx.size];
-        amount += fee;
-        
-        if (self.amount == 0) {
-            tx = [m.wallet transactionForAmounts:protoReq.details.outputAmounts
-                  toOutputScripts:protoReq.details.outputScripts withFee:YES];
-        }
-        else {
-            tx = [m.wallet transactionForAmounts:@[@(self.amount)]
-                  toOutputScripts:@[protoReq.details.outputScripts.firstObject] withFee:YES];
-        }
+    fee = [m.wallet feeForTxSize:tx.size];
+    amount += fee;
+    
+    if (self.amount == 0) {
+        tx = [m.wallet transactionForAmounts:protoReq.details.outputAmounts
+              toOutputScripts:protoReq.details.outputScripts];
+    }
+    else {
+        tx = [m.wallet transactionForAmounts:@[@(self.amount)]
+              toOutputScripts:@[protoReq.details.outputScripts.firstObject]];
+    }
 
-        if (tx) {
-            amount = [m.wallet amountSentByTransaction:tx] - [m.wallet amountReceivedFromTransaction:tx];
-            fee = [m.wallet feeForTransaction:tx];
-        }
+    if (tx) {
+        amount = [m.wallet amountSentByTransaction:tx] - [m.wallet amountReceivedFromTransaction:tx];
+        fee = [m.wallet feeForTransaction:tx];
     }
 
     for (NSData *script in protoReq.details.outputScripts) {
@@ -400,7 +385,7 @@ memo:(NSString *)memo isSecure:(BOOL)isSecure
             if (self.amount > 0 && self.amount <= m.wallet.balance) {
                 int64_t amount = m.wallet.balance -
                                  [m.wallet feeForTxSize:[m.wallet transactionForAmounts:@[@(m.wallet.balance)]
-                                  toOutputScripts:@[self.request.details.outputScripts.firstObject] withFee:NO].size +
+                                  toOutputScripts:@[self.request.details.outputScripts.firstObject]].size +
                                   34];
             
                 [[[UIAlertView alloc]
@@ -825,8 +810,6 @@ fromConnection:(AVCaptureConnection *)connection
         }];
     }
     else if (self.request) {
-        if ([title isEqual:NSLocalizedString(@"remove fee", nil)]) self.didAskFee = YES, self.removeFee = YES;
-        if ([title isEqual:NSLocalizedString(@"continue", nil)]) self.didAskFee = YES, self.removeFee = NO;
         [self confirmProtocolRequest:self.request];
     }
 }
