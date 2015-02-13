@@ -100,4 +100,7 @@ masterPublicKey:(NSData *)masterPublicKey seed:(NSData *(^)(NSString *authprompt
 // historical wallet balance after the given transaction, or current balance if transaction is not registered in wallet
 - (uint64_t)balanceAfterTransaction:(BRTransaction *)transaction;
 
+// fee that will be added for a transaction of the given size in bytes
+- (uint64_t)feeForTxSize:(NSUInteger)size;
+
 @end
