@@ -213,7 +213,14 @@ outputAddresses:(NSArray *)addresses outputAmounts:(NSArray *)amounts
 
 - (uint64_t)standardFee
 {
-    return ((self.size + 999)/1000)*TX_FEE_PER_KB;
+    uint64_t fee = ((self.size + 999)/1000)*TX_FEE_PER_KB;
+    // Dogecoin: dust spam protection fee
+    for (NSNumber *amt in self.outputAmounts) {
+        if (amt.unsignedLongLongValue < SATOSHIS) {
+            fee += SATOSHIS;
+        }
+    }
+    return fee;
 }
 
 // checks if all signatures exist, but does not verify them
@@ -384,17 +391,6 @@ sequence:(uint32_t)sequence
     return p/self.size;
 }
 
-- (uint64_t)standardFee
-{
-    uint64_t fee = ((self.size + 999)/1000)*TX_FEE_PER_KB;
-    // Dogecoin: dust spam protection fee
-    for (NSNumber *amt in self.outputAmounts) {
-        if (amt.unsignedLongLongValue < SATOSHIS) {
-            fee += SATOSHIS;
-        }
-    }
-    return fee;
-}
 
 - (NSUInteger)hash
 {
