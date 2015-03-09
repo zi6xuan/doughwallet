@@ -182,7 +182,7 @@
     
     switch (section) {
         case 0: return 2;
-        case 1: return (self.touchId) ? 3 : 2;
+        case 1: return (self.touchId) ? 2 : 1;
         case 2: return 2;
     }
     
@@ -191,14 +191,12 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *toggleIdent = @"ToggleCell", *disclosureIdent = @"DisclosureCell", *restoreIdent = @"RestoreCell",
+    static NSString *disclosureIdent = @"DisclosureCell", *restoreIdent = @"RestoreCell",
                     *actionIdent = @"ActionCell", *selectorIdent = @"SelectorCell",
                     *selectorOptionCell = @"SelectorOptionCell";
     UITableViewCell *cell = nil;
-    UILabel *toggleLabel;
-    UISwitch *toggleSwitch;
     BRWalletManager *m = [BRWalletManager sharedInstance];
-    
+        
     if (tableView == self.selectorController.tableView) {
         cell = [self.tableView dequeueReusableCellWithIdentifier:selectorOptionCell];
         [self setBackgroundForCell:cell tableView:tableView indexPath:indexPath];
@@ -211,6 +209,8 @@
         
         return cell;
     }
+    
+    
     
     switch (indexPath.section) {
         case 0:
@@ -243,14 +243,6 @@
                         break;
                     }
                     // passthrough if ! self.touchId
-                    
-                case 2:
-                    cell = [tableView dequeueReusableCellWithIdentifier:toggleIdent];
-                    toggleLabel = (id)[cell viewWithTag:2];
-                    toggleSwitch = (id)[cell viewWithTag:3];
-                    toggleSwitch.on = [[NSUserDefaults standardUserDefaults] boolForKey:SETTINGS_SKIP_FEE_KEY];
-                    toggleLabel.hidden = (toggleSwitch.on) ? NO : YES;
-                    break;
             }
             
             break;
@@ -284,8 +276,7 @@
             return nil;
 
         case 2:
-            return NSLocalizedString(@"dogecoin network fees are only optional for high priority transactions "
-                                     "(removal may cause delays)", nil);            
+            return nil;
     }
     
     return nil;
