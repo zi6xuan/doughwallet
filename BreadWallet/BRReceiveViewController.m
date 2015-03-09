@@ -283,7 +283,7 @@ error:(NSError *)error
         BRWalletManager *m = [BRWalletManager sharedInstance];
     
         [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"amount too small", nil)
-          message:[NSString stringWithFormat:NSLocalizedString(@"bitcoin payments can't be less than %@", nil),
+          message:[NSString stringWithFormat:NSLocalizedString(@"dogecoin payments can't be less than %@", nil),
                    [m stringForAmount:TX_MIN_OUTPUT_AMOUNT]] delegate:nil
           cancelButtonTitle:NSLocalizedString(@"ok", nil) otherButtonTitles:nil] show];
         return;
