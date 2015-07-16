@@ -412,7 +412,13 @@ static NSString *getKeychainString(NSString *key, NSError **error)
 {
     NSData *d = getKeychainData(CREATION_TIME_KEY, nil);
 
-    return (d.length < sizeof(NSTimeInterval)) ? BIP39_CREATION_TIME : *(const NSTimeInterval *)d.bytes;
+    NSTimeInterval seedTime = (d.length < sizeof(NSTimeInterval)) ? BIP39_CREATION_TIME : *(const NSTimeInterval *)d.bytes;
+
+    if (seedTime < DOUGHWALLET_CONCEPTION_TIME) {
+        return DOUGHWALLET_CONCEPTION_TIME;
+    }
+
+    return seedTime;
 }
 
 // true if touch id is enabled

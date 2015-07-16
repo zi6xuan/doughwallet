@@ -30,6 +30,7 @@
 // https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki
 
 #define BIP39_CREATION_TIME (1388534400.0 - NSTimeIntervalSince1970)
+#define DOUGHWALLET_CONCEPTION_TIME (1417000000.0 - NSTimeIntervalSince1970) // december 2014
 
 @interface BRBIP39Mnemonic : NSObject<BRMnemonic>
 
