@@ -534,8 +534,9 @@ static const struct { uint32_t height; char *hash; time_t timestamp; uint32_t ta
 //TODO: XXXX compare seeds against mike hearn's list for bitcoinXT
 static const char *dns_seeds[] = {
     "seed.dogecoin.com",
-    "seed.mophides.com",
-    "seed.dogechain.info",
+    "seed.multidoge.org",
+    "seed2.multidoge.org",
+    "seed.doger.dogecoin.com",
 };
 
 #endif
