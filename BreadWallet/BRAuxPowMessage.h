@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+bool isAuxPowVersion(uint32_t version);
+
 @interface BRAuxPowMessage : NSObject
 
 + (instancetype)blockWithMessage:(NSData *)message;

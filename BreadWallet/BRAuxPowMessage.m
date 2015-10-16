@@ -13,9 +13,15 @@
 #import "NSMutableData+Bitcoin.h"
 #import <CommonCrypto/CommonDigest.h>
 
+bool isAuxPowVersion(uint32_t version)
+{
+    uint32_t minauxversion = 0x02;
+    uint32_t isauxpow = 0x6201 ;
+    uint32_t versionmask = 0xff;
+    return (version >> 8) == isauxpow && (version & versionmask) >= minauxversion;
+}
+
 @implementation BRAuxPowMessage
-
-
 
 // message can be either a merkleblock or header message
 + (instancetype)blockWithMessage:(NSData *)message

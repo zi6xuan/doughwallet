@@ -47,8 +47,6 @@
 #define ZERO_HASH          @"0000000000000000000000000000000000000000000000000000000000000000".hexToData
 #define CONNECT_TIMEOUT    3.0
 
-#define BLOCK_VERSION_AUXPOW_AUXBLOCK 0x00620102
-
 typedef enum {
     error = 0,
     tx,
@@ -759,7 +757,7 @@ services:(uint64_t)services
 
             BRMerkleBlock *block;
 
-            if (blockversion == BLOCK_VERSION_AUXPOW_AUXBLOCK) {
+            if (isAuxPowVersion(blockversion)) {
                 NSData* blockHeader = [message subdataWithRange:NSMakeRange(off, 80)];
                 off += 80;
 

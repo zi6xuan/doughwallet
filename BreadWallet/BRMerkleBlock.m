@@ -37,9 +37,6 @@
 #define TARGET_SPACING        60
 #define DIFF_CHANGE_TARGET    145000
 
-
-#define BLOCK_VERSION_AUXPOW_AUXBLOCK 0x00620102
-
 // convert difficulty target format to bignum, as per: https://github.com/bitcoin/bitcoin/blob/master/src/uint256.h#L323
 static void setCompact(BIGNUM *bn, uint32_t compact)
 {
@@ -239,7 +236,7 @@ parentBlock:(NSData*)parentBlock
     NSTimeInterval max_time = [NSDate timeIntervalSinceReferenceDate] + MAX_TIME_DRIFT;
 
     NSTimeInterval checktime = _timestamp;
-    if (_version == BLOCK_VERSION_AUXPOW_AUXBLOCK) {
+    if ([self isAuxPow]) {
         checktime = _parentBlock.timestamp;
     }
 
@@ -255,7 +252,7 @@ parentBlock:(NSData*)parentBlock
 
     NSData* h;
 
-    if (_version == BLOCK_VERSION_AUXPOW_AUXBLOCK) {
+    if ([self isAuxPow]) {
         h = _parentBlock.powHash;
     } else {
         h = _powHash;
@@ -442,9 +439,10 @@ parentBlock:(NSData*)parentBlock
     return *(const NSUInteger *)_blockHash.bytes;
 }
 
+
 - (BOOL)isAuxPow
 {
-    return _version == BLOCK_VERSION_AUXPOW_AUXBLOCK;
+    return isAuxPowVersion(_version);
 }
 
 - (BOOL)isEqual:(id)object
