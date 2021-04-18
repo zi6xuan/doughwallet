@@ -906,8 +906,10 @@ static const char *dns_seeds[] = {
 - (void)sortPeers
 {
     [_peers sortUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        if ([obj1 timestamp] > [obj2 timestamp]) return NSOrderedAscending;
-        if ([obj1 timestamp] < [obj2 timestamp]) return NSOrderedDescending;
+//        if ([obj1 timestamp] > [obj2 timestamp]) return NSOrderedAscending;
+//        if ([obj1 timestamp] < [obj2 timestamp]) return NSOrderedDescending;
+        if ([(BRPeer*) obj1 timestamp] > [(BRPeer*) obj2 timestamp]) return NSOrderedAscending;
+        if ([(BRPeer*) obj1 timestamp] < [(BRPeer*) obj2 timestamp]) return NSOrderedDescending;
         return NSOrderedSame;
     }];
 }
@@ -1097,7 +1099,8 @@ static const char *dns_seeds[] = {
     NSTimeInterval t = [NSDate timeIntervalSinceReferenceDate] - 3*60*60;
 
     // remove peers more than 3 hours old, or until there are only 1000 left
-    while (self.peers.count > 1000 && [self.peers.lastObject timestamp] < t) {
+//    while (self.peers.count > 1000 && [self.peers.lastObject timestamp] < t) {
+    while (self.peers.count > 1000 && [(BRPeer*)self.peers.lastObject timestamp] < t) {
         [self.peers removeObject:self.peers.lastObject];
     }
 
