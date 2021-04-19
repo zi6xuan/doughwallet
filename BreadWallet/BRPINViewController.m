@@ -443,7 +443,7 @@
         to.view.frame = from.view.frame;
         [v insertSubview:to.view belowSubview:from.view];
         [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault animated:YES];
-        
+
         [UIView animateWithDuration:0.25 delay:0.0 options:UIViewAnimationOptionCurveEaseOut animations:^{
             from.view.alpha = 0.0;
             from.view.transform = CGAffineTransformMakeScale(0.75, 0.75);
@@ -484,17 +484,17 @@ toViewController:(UIViewController *)toVC
     return self;
 }
 
-#pragma mark - UIViewControllerTransitioningDelegate
-
-- (id<UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented
-presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source
-{
-    return self;
-}
-
-- (id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed
-{
-    return self;
-}
+//#pragma mark - UIViewControllerTransitioningDelegate
+//
+//- (id<UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented
+//presentingController:(UIViewController *)presenting sourceController:(UIViewController *)source
+//{
+//    return self;
+//}
+//
+//- (id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed
+//{
+//    return self;
+//}
 
 @end
